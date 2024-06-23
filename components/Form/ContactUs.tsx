@@ -334,7 +334,7 @@ const ContactUs = () => {
                             Completed && !errors.root &&
                                 <div className='flex flex-col w-full justify-center items-center py-4  drop-shadow-sm '>
                                 <LucideCircleCheck className=' h-20 w-20 text-green-400' ></LucideCircleCheck>
-                                <p className="mt-4 text-lg  text-gray-500 font-bold ">Success, we'll contact you soon</p>
+                                <p className="mt-4 text-lg  text-gray-500 font-bold ">Success, we&apos;ll contact you soon</p>
                                 </div>
                             }
 

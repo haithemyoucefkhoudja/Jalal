@@ -1,4 +1,4 @@
-import IMedia from "./Media";
+import {FileInfo} from "./Media";
 
 export type RequestStatus = 'PENDING'  |'APPROVED' | 'REJECTED'
 export interface IRequest {
@@ -7,7 +7,7 @@ export interface IRequest {
     email: string;
     description:string;
     status:RequestStatus;
-    media:IMedia[]
+    media:FileInfo[]
     createdAt:Date;
     updatedAt:Date;
 }

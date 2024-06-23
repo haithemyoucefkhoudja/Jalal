@@ -120,7 +120,7 @@ const ImageCard = memo(({ src, alt, index, deleteImage, onView, ImageProgress,er
         src={src}
         alt={alt}
       />
-    <ImageProgressComponent src={src} alt={alt} onView={onView} ImageProgress={ImageProgress}></ImageProgressComponent>
+    <ImageProgressComponent src={src} alt={alt} onView={onView} ></ImageProgressComponent>
       
   </div>
   
