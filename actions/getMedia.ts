@@ -9,6 +9,7 @@ export default async function FetchMedia(req_id:string) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ req_id }),
+      
     });
     return res.json() 
 }

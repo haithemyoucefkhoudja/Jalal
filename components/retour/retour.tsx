@@ -154,7 +154,6 @@ export function Retour({session, requests, meetings, count, page, type='REQUEST'
   const itemsPerPage = 10;
   const totalP = Math.ceil(count / limit);
   const totalBatches = Math.ceil(totalP / itemsPerPage);
-  const [isOpen, setIsOpen] = useState(false);
   const items = type === 'REQUEST' ? requests : meetings;
   const groupedItems = groupByDate(items as IRequest[] || []);
 
@@ -212,13 +211,7 @@ export function Retour({session, requests, meetings, count, page, type='REQUEST'
                           
                           {type === 'REQUEST' &&
                             <TableCell className="max-w-10 overflow-hidden break-words whitespace-normal">
-                              {!ImgModalOpen ? (
-                                <Button type="button" variant="outline" className="rounded-lg" onClick={(e) => {
-                                  setImgModalOpen(true)
-                                }} >إفتح الصور</Button>
-                              ) : (
-                                <DashboardImageModal isOpen={ImgModalOpen} updateState={() => setImgModalOpen(false)} req_id={item._id} />
-                              )}
+                                <DashboardImageModal   req_id={item._id} />
                             </TableCell>
                           }
                           {type === 'MEETING' &&

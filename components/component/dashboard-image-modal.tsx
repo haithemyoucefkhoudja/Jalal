@@ -6,13 +6,16 @@ import { useEffect, useState } from "react"
 import {FileInfo} from "@/types/Media"
 import FetchMedia from "@/actions/getMedia"
 import classNames from "classnames"
-export function DashboardImageModal({req_id, isOpen, updateState}:{req_id:string, isOpen:boolean,updateState:()=>void}) {
-  
+export function DashboardImageModal({req_id, }:{req_id:string,}) {
+
   const [curr, setCurr] = useState(0);
+  const [open, setOpen] = useState(false)
   const [error, setError] = useState<null | string>(null);
 
   const [media, setMedia] = useState<FileInfo[] | null>(null);
   useEffect(()=>{
+    if(!open)
+      return;
     let isMounted = true;
     FetchMedia(req_id)
     .then((res) => {
@@ -25,20 +28,23 @@ export function DashboardImageModal({req_id, isOpen, updateState}:{req_id:string
     return () => {
       isMounted = false;
     };
-  },[req_id])
+  },[req_id, open])
   return (
-    <Dialog open={isOpen} onOpenChange={updateState}>
-      
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild type="button">
         <Button type="button" variant="outline" className=" rounded-lg">إفتح الصور</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[800px] bg-white ">
+        <DialogTitle>
+
+        </DialogTitle>
         <div className="grid gap-6">
           <div className="grid gap-4">
           { media && media.map((ele,index)=>{
             if(index == curr)
               return(<div className="relative">
               <Image
+                key={ele.key}
                 src={ele.url}
                 alt={ele.name}
                 width={800}

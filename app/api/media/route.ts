@@ -15,7 +15,6 @@ export async function POST(req:NextRequest) {
             { status: 404 }
           );
         const media = req.media
-        console.log('media:',media)
         if(media.length == 0)
             return NextResponse.json(
                 { error: 'Something went wrong:\n'.concat('no Media Was Found') },
