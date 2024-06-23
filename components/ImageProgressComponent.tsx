@@ -4,7 +4,7 @@ import React from "react";
 import { EyeIcon } from "lucide-react";
 import { Media } from "@/app/types/Media";
 
-export const ImageProgressComponent = ({ImageProgress, onView, src, alt}:{ImageProgress:IProgress,   onView: (image: Media) => void; src: string;
+export const ImageProgressComponent = ({onView, src, alt}:{ onView: (image: Media) => void; src: string;
     alt: string;}) =>{
   return(
     <React.Fragment>

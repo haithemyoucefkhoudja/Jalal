@@ -21,7 +21,6 @@ export const ModalComponent: React.FC<ModalProps> = ({
         <div className="max-w-screen-lg w-full    md:w-5/6 md:h-5/6 mx-4">
           <div className="bg-white px-4 pb-4">
             <div className="flex flex-row justify-between text-center items-center py-3">
-              <span className="text-lg font-semibold">{selectedImage.alt}</span>
               <button
                 type="button"
                 className=" bg-gray-600 bg-opacity-50 py-1 px-2.5 hover:bg-gray-400

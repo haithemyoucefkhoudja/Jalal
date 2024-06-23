@@ -19,14 +19,14 @@ const FileUploadForm = () => {
     if (e.target.files) {
       //convert `FileList` to `File[]`
       const _files = Array.from(e.target.files);
-      
+      if(_files.length <= 8)
       setImages(prev => {
         const newFiles = _files.filter(file => 
           !prev.some(prevFile => prevFile.name === file.name && prevFile.size === file.size)
         );
-        return([...prev, ...newFiles])});
-      
-      
+        if([...prev, ...newFiles].length > 8)
+          return prev
+        return([...prev, ...newFiles])});      
     }
   };
   useEffect(()=>{
@@ -90,13 +90,12 @@ const FileUploadForm = () => {
   };
   return (
     <React.Fragment>
-    <form className="w-full" onSubmit={handleSubmit}>
       <div className="flex justify-between">
         <CustomFileSelector
           accept="image/png, image/jpeg"
           onChange={handleFileSelected}
         />
-        <button
+        {/*<button
           type="submit"
           className={classNames({
             "bg-violet-50 text-violet-500 hover:bg-violet-100 px-4 py-2 rounded-md  ":
@@ -115,7 +114,7 @@ const FileUploadForm = () => {
             </span>
          </div>: 'Upload'}
           
-        </button>
+        </button>*/}
       </div>
       <ImagePreview error={error !== null} imageStates={ImeagesState} images={srcImages} deleteImage={function (index: number): void {
         
@@ -123,7 +122,6 @@ const FileUploadForm = () => {
           (_, i) =>(i !== index)
         ))
       } } />
-    </form>
     </React.Fragment>
   );
 };

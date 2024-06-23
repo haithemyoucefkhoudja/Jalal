@@ -131,6 +131,8 @@ function SelectionOptions({request}:{request:IRequest}) {
 )
 }
 const groupByDate = (requests: IRequest[]): Record<string, IRequest[]> => {
+  if(!requests)
+    return {}
   return requests.reduce((groups: Record<string, IRequest[]>, request) => {
     const date = formatDate(request.createdAt.toString());
     if (!groups[date]) {

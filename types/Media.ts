@@ -1,10 +1,10 @@
-import { IRequest } from "./request";
-
-export default interface IMedia {
-    id:string;
-    url:string;
-    requestId:string;
-    type:string;
-    createdAt:Date;
-    request:IRequest
-}
+export interface FileInfo {
+    customId: string | null;
+    key: string;
+    name: string;
+    serverData: string | null;
+    size: number;
+    type: string;
+    url: string;
+  }
+  

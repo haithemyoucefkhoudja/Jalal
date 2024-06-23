@@ -17,10 +17,11 @@ export const ourFileRouter = {
    
     // Takes exactly ONE image up to 2MB
     strictImageAttachment: f({
-      image: { maxFileSize: "4MB", maxFileCount: 15, minFileCount: 1 },
+      image: { maxFileSize: "4MB", maxFileCount: 8, minFileCount: 1 },
     })
       .middleware(({ req }) => auth(req))
-      .onUploadComplete((data) => console.log("file", data)),
+      .onUploadComplete((data) => console.log("file", data))
+      ,
    
     // Takes up to 4 2mb images and/or 1 256mb video
     mediaPost: f({

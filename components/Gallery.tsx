@@ -9,11 +9,11 @@ import { ImageProgressComponent } from "./ImageProgressComponent";
 type Props = {
   images: Media[];
   deleteImage: (index: number) => void;
-  imageStates:IProgress[];
-  error:boolean
+  uploading:boolean;
+  completed:boolean
 };
 
-const ImagePreview = ({ images, deleteImage,imageStates, error }: Props) => {
+const Gallery = ({ images, deleteImage,  uploading ,completed}: Props) => {
   const [selectedImage, setSelectedImage] = useState<Media | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const handleNext = () => {
@@ -49,13 +49,13 @@ const ImagePreview = ({ images, deleteImage,imageStates, error }: Props) => {
           
           return (
             <ImageCard
-              error={error}
+              completed={completed}
+              uploading={uploading}
               key={index}
               src={image.src}
               alt={image.alt}
               index={index}
               deleteImage={()=>deleteImage(index)}
-              ImageProgress={imageStates[index]}
               onView={openModal}
             />)
         })}
@@ -85,11 +85,11 @@ type ImageCardProps = {
   index: number;
   deleteImage: () => void;
   onView: (image: Media) => void;
-  ImageProgress:IProgress;
-  error:boolean;
+  uploading:boolean;
+  completed:boolean;
 };
 
-const ImageCard = memo(({ src, alt, index, deleteImage, onView, ImageProgress,error }:ImageCardProps) => {
+const ImageCard = memo(({ src, alt, index, deleteImage, onView, uploading, completed }:ImageCardProps) => {
  return( 
   <section className="w-full" key={index}>
   <div className=" inline-flex space-x-1.5 items-center  w-full">
@@ -99,13 +99,14 @@ const ImageCard = memo(({ src, alt, index, deleteImage, onView, ImageProgress,er
       onChange={() => onSelect(index)}
       className="h-4 w-4"
     />*/}
+    {!uploading && !completed &&
     <button
       className="flex justify-center items-center rounded-md h-8 w-8 text-gray-500 hover:text-gray-900  disabled:pointer-events-none disabled:opacity-50 drop-shadow-lg"
       onClick={() => deleteImage()}
       type="button"
     >
     <X className="w-6 h-6 "></X>
-  </button>
+  </button>}
     {/*<button
       className="flex justify-center items-center rounded-md h-8 w-8 text-gray-500 hover:text-gray-900  disabled:pointer-events-none disabled:opacity-50 drop-shadow-lg"
       onClick={() => onView({src, alt} )}
@@ -120,17 +121,10 @@ const ImageCard = memo(({ src, alt, index, deleteImage, onView, ImageProgress,er
         src={src}
         alt={alt}
       />
-    <ImageProgressComponent src={src} alt={alt} onView={onView} ImageProgress={ImageProgress}></ImageProgressComponent>
+    <ImageProgressComponent src={src} alt={alt} onView={onView}></ImageProgressComponent>
       
   </div>
   
-  {ImageProgress &&   ImageProgress.progress == 100 ? (<div className=" inline-flex justify-center items-center h-10 w-full"><LucideFolderDown color="green"></LucideFolderDown></div>):
-  
-  error ?  (<div className=" inline-flex justify-center items-center h-10 w-full"><LucideAlertCircle color="red"></LucideAlertCircle></div>)
-  :
-  (
-    <div className=" inline-flex justify-center items-center h-10 w-full">{ImageProgress.progress == 0 ? '': Math.ceil(ImageProgress.progress) + '%'}</div>
-  )}
 </section>)
 });
 ImageCard.displayName = 'imageCard';
@@ -144,4 +138,4 @@ loading="eager"
 />
 })
 CustomImage.displayName = 'Custom Image';
-export default ImagePreview;
+export default Gallery;

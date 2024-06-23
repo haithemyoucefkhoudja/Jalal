@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import HeroImage from '@/public/vivid-blurred-colorful-wallpaper-background.png'
 import LogoImage from '@/public/Logo.jpg'
-import FileUploadForm from "@/components/FileUploadForm";
+//import FileUploadForm from "@/components/FileUploadForm";
+import ContactUs from "@/components/Form/ContactUs";
 
 export default function LandingPage() {
   return (
@@ -28,7 +29,7 @@ export default function LandingPage() {
             <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
               <div className="flex flex-col justify-center space-y-4">
                 <div className="space-y-4 text-center md:text-left">
-                <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none leading-5 text-green-400" >
+                <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none leading-10 text-green-400" >
                   A monthly inspection is better than regretting your action
                   </h1>
                   <p className="max-w-[600px] text-gray-500 md:text-xl">
@@ -52,14 +53,22 @@ export default function LandingPage() {
                   </Link>
                 </div>
               </div>
-              <div className="flex">
+              <div className="flex relative">
+                <svg className="hidden md:block  md:absolute -z-50 right-0 left-20 top-20 -translate-x-1/2 transform" width="404" height="404" fill="none" viewBox="0 0 404 404" aria-hidden="true">
+                    <defs>
+                        <pattern id="85737c0e-0916-41d7-917f-596dc7edfa27" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+                            <rect x="0" y="0" width="4" height="4" className="text-green-200 " fill="currentColor"></rect>
+                        </pattern>
+                    </defs>
+                    <rect width="404" height="404" fill="url(#85737c0e-0916-41d7-917f-596dc7edfa27)"></rect>
+                </svg>
               <Image
                 
                 src={HeroImage.src}
                 width={HeroImage.width}
                 height={HeroImage.height}
                 alt="Hero"
-                className="mx-auto rounded-full aspect-video overflow-hidden  object-contain object-center w-5/6 sm:w-full lg:order-last"
+                className="mx-auto rounded-full aspect-video overflow-hidden  object-contain object-center w-5/6 sm:w-full lg:order-last "
               />
               </div>
             </div>
@@ -70,7 +79,7 @@ export default function LandingPage() {
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
                 
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl my-4">
+                <h2 className="text-3xl font-bold tracking-tighter text-green-300 sm:text-5xl my-4">
                 What we Offer?
                 </h2>
               </div>
@@ -128,9 +137,30 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-        <section className="flex min-h-screen lg:p-24 md:p-8 p-4">
-        <FileUploadForm />
-        </section>
+        {/*<section className="flex lg:p-24 md:p-8 p-4  space-y-6 space-x-3">
+        <form className="w-full max-w-sm flex flex-col space-y-3">
+          <div className="flex items-center border-b border-teal-500 py-2">
+            <input className="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none" type="text" placeholder="Jane Doe" aria-label="Full name"/>
+          </div>
+          <div className="flex items-center border-b border-teal-500 py-2">
+            <input className="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none" type="text" placeholder="JaneDoe@gmail.com" aria-label="Email"/>
+          </div>
+          
+          <div className="flex items-center border-b border-teal-500 py-2 min-h-96">
+            <textarea  className="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"  placeholder="Descreption" aria-label="Descreption"/>
+          </div>
+            <FileUploadForm />
+          <button className="flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 text-sm border-4 text-white py-1 px-2 rounded" type="button">
+              Contact Us
+          </button>
+        </form>
+        <div className="h-full w-full bg-green-300 ">
+        <h2 className="text-3xl font-bold tracking-tighter text-gray-50 sm:text-5xl my-4">
+          Get In touch
+        </h2>
+        </div>
+        </section>*/}
+        <ContactUs></ContactUs>
         {/*<section className="w-full py-12 md:py-24 lg:py-32 bg-gray-100 ">
           <div className="container grid items-center gap-6 px-4 md:px-6 lg:grid-cols-2 lg:gap-10">
           <div className="space-y-2">
