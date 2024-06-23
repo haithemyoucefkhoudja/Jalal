@@ -1,17 +1,56 @@
-/**
- * v0 by Vercel.
- * @see https://v0.dev/t/KZ7B5HjfOn7
- * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
- */
-import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
 
-export default function ConfirmDeletion() {
+import {Dialog,  DialogContent, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import deleteRequest from "@/actions/deleteRequest";
+import { REQMEET } from "@/types/reqmeet";
+import deleteMeeting from "@/actions/deleteMeeting";
+
+export default  function ConfirmDeletion({req_id, type}:{req_id:string, type:REQMEET}) {
+  const [open, setOpen] = useState(false)
+  const [error, setError] = useState('')
+  const [loading, setIsLoading] = useState(false)
+  const openModal = () => {
+    setOpen(true)
+  }
+  const closeModal = () => {
+    setOpen(false)
+  }
+  useEffect(()=>{
+    setError('')
+  },[open])
+  const router = useRouter()
+  const deleteItem = async () => {
+    setError('')
+    setIsLoading(true)
+    let res = null;
+    if (type === 'REQUEST' as REQMEET) {
+    res = await deleteRequest(req_id)
+    }
+    else if(type==='MEETING' as REQMEET)
+    res = await deleteMeeting(req_id)
+    else
+    {
+      setError('Type Not Found')
+      return;
+    }
+
+    if(!res.success)
+      {
+        setIsLoading(false);
+        setError(res.error)
+        return 
+      }
+    router.refresh()
+    setIsLoading(false)
+    setOpen(false)
+  }
   return (
-    <Dialog >
-      <DialogTrigger asChild>
-        <Button variant="destructive">حذف</Button>
-      </DialogTrigger>
+    <>
+    
+    <Button onClick={openModal} variant="destructive" >حذف</Button>
+    <Dialog  onOpenChange={setOpen} open={open}>      
       <DialogContent className="sm:max-w-[425px] bg-white">
         <div className="flex flex-col items-center justify-center gap-4 py-8">
           <TriangleAlertIcon className="h-8 w-8 text-red-500" />
@@ -20,14 +59,27 @@ export default function ConfirmDeletion() {
             <DialogDescription>
                 هل أنت متأكد أنك تريد حذف هاذا العنصر؟
             </DialogDescription>
+            <DialogDescription>
+                {error && <p className="text-red-500">{error}</p>}
+            </DialogDescription>
           </div>
         </div>
+
         <DialogFooter className=" inline-flex justify-center  w-full ">
-            <Button variant="outline">إلغاء</Button>
-            <Button variant="destructive">تأكيد الحذف</Button>
+            <DialogClose  type="button">
+                <Button variant="outline" type="button">إلغاء</Button>
+            </DialogClose>
+            <Button variant="destructive" className="disabled:pointer-events-none disabled:opacity-50"  type="button" onClick={()=>deleteItem()}>{loading?
+            (
+            <div className="w-4 h-4 rounded-full border-2 border-b-transparent animate-spin border-[inherit] "/>) :
+            (<span> تأكيد الحذف</span>)}
+
+            </Button>
         </DialogFooter>
+        
       </DialogContent>
     </Dialog>
+    </>
   )
 }
 

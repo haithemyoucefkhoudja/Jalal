@@ -8,7 +8,6 @@ export default async function isUser({ credentials }: { credentials: Record<"ema
     await connectMongoDB();
     // Properly typed findOne call
     const user: IUser | null =  await User.findOne<IUser>({ email: credentials.email}).exec();
-    console.log(user)
 
     if (!user) {
       return null;

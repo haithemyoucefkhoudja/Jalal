@@ -1,5 +1,5 @@
 import connectMongoDB from "@/lib/mongoDB";
-import { IRequest, RequestModel } from "@/models/request";
+import { IMeeting, MeetingModel } from "@/models/meeting";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req:NextRequest) {
@@ -8,20 +8,18 @@ export async function POST(req:NextRequest) {
     const skip = (page - 1) * limit;
     try {
       await connectMongoDB();
-      const reqs:IRequest[] = await RequestModel.find()
-      .select('status descreption email name _id createdAt updatedAt')
+      const meetings:IMeeting[] = await MeetingModel.find()
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
       .exec();
-      console.log(reqs)
-      if(!reqs)
+      if(!meetings)
         return NextResponse.json(
           { error: 'Something went wrong:\n NOT-FOUND' },
           { status: 404 }
         );
         
-        return NextResponse.json({ requests: reqs });
+        return NextResponse.json({ meetings: meetings });
       } catch (error:any) {
         return NextResponse.json(
           { error: 'Something went wrong:\n'.concat(error.message) },

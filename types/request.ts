@@ -2,7 +2,7 @@ import {FileInfo} from "./Media";
 
 export type RequestStatus = 'PENDING'  |'APPROVED' | 'REJECTED'
 export interface IRequest {
-    id: string;
+    _id: string;
     name: string;
     email: string;
     description:string;

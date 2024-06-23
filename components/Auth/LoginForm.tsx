@@ -34,9 +34,10 @@ const LoginForm = () => {
     
     if (loginData?.error) {
       setError('root', {message:loginData.error} )
+      return;
     }
     if(loginData?.ok){
-      router.replace('/Dashboard')
+      router.replace('/admin/Dashboard/Requests')
     }
     return loginData
   };

@@ -1,5 +1,17 @@
 import { z } from "zod";
-
+export const TimeFormSchema = z.object({
+  appointment: z.string().refine((value) => {
+    try {const parsedDate = new Date(value);
+      if(parsedDate.toString() == 'Invalid Date')
+        return false
+      return parsedDate;
+    } catch {
+      return false;
+    }
+  }, {
+    message: 'Invalid datetime format. Format should be YYYY-MM-DDTHH:mm',
+  })
+})
 export const ContactFormSchema = z.object({
     email: z.string()
     .min(1, "Email is required!")

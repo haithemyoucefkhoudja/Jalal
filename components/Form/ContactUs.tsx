@@ -1,17 +1,13 @@
 'use client';
-// components/ContactUs.js
-import CustomFileSelector from '../CustomFileSelector';
-import { uploadFiles } from "@/utils/uploadthing";
 import { FileInfo } from "@/types/Media";
-import React, { FormEvent, useEffect, useState } from "react";
-import ImagePreview from "../ImagePreview";
-import { IProgress } from '../progress';
+import React, {  useEffect, useState } from "react";
 import { useForm } from 'react-hook-form';
-import { ContactFormSchema } from '@/schemas/Contact';
+import { ContactFormSchema, TimeFormSchema } from '@/schemas/Contact';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LucideAlertCircle, LucideCircleCheck, LucideRepeat } from 'lucide-react';
-import { MultiUploader } from '@/utils/example';
+import 'react-datepicker/dist/react-datepicker.css';
+
 import { useDropzone } from "@uploadthing/react";
 import { generateClientDropzoneAccept } from "uploadthing/client";
  
@@ -19,6 +15,12 @@ import { useUploadThing } from "@/utils/uploadthing";
 import { useCallback,  } from "react";
 import { Media } from '@/app/types/Media';
 import Gallery from '../Gallery';
+import createRequest from '@/actions/createRequest';
+import { IRequest } from '@/models/request';
+import DatePicker from 'react-datepicker';
+import { Button } from '../ui/button';
+import createMeeting from "@/actions/createMeeting";
+import { IMeeting } from "@/models/meeting";
  
 
         {/*<button
@@ -145,6 +147,7 @@ const ContactUs = () => {
         register,
         handleSubmit,
         clearErrors,
+        getValues,
         formState: { isSubmitting,errors },
       }  = useForm<z.infer<typeof ContactFormSchema>>({
       resolver: zodResolver(ContactFormSchema),
@@ -159,7 +162,6 @@ const ContactUs = () => {
     const [uploading, setUploading] = useState(false);
     const [step, setStep] = useState(1);
   const onDrop = useCallback((acceptedFiles: File[]) => {
-
     if(acceptedFiles.length <= 8)
         setFiles(prev => {
           const newFiles = acceptedFiles.filter(file => 
@@ -207,7 +209,28 @@ const ContactUs = () => {
         onUploadProgress: (p)=>{
             setProgress(p)
         },
-      onClientUploadComplete: (res) => {
+      onClientUploadComplete: async (res) => {
+        
+        const FileInfos:FileInfo[] = res.map(ele=>{
+          return {
+            customId:ele.customId,
+            key:ele.key,
+            name:ele.name,
+            serverData:ele.serverData,
+            size:ele.size,
+            url:ele.url,
+            type:ele.type
+
+          }
+        })
+        const s_res = await createRequest({
+          ...getValues(),
+          media: FileInfos
+        }as unknown as IRequest)
+        if(!s_res.success) {
+            setError('root',{message:'Something went wrong'.concat(s_res.error)})
+            return;
+        }
         setCompleted(true);
         setProgress(null);
         setUploading(false);
@@ -284,7 +307,7 @@ const ContactUs = () => {
                         </div>
                         }
                         <div className="flex justify-end sm:col-span-2 self-end ">
-                            <button  type="submit" className="inline-flex items-center rounded-md px-4 py-2 font-medium focus:outline-none focus-visible:ring focus-visible:ring-teal-500 shadow-sm sm:text-sm transition-colors duration-75 text-teal-500 border bg-white hover:bg-teal-50 active:bg-teal-100 disabled:bg-teal-100  disabled:cursor-not-allowed">
+                            <button disabled={isSubmitting} type="submit" className="inline-flex items-center rounded-md px-4 py-2 font-medium focus:outline-none focus-visible:ring focus-visible:ring-teal-500 shadow-sm sm:text-sm transition-colors duration-75 text-teal-500 border bg-white hover:bg-teal-50 active:bg-teal-100 disabled:bg-teal-100  disabled:cursor-not-allowed">
                                 {
                                     !isSubmitting? <span>Next</span>:      <div className="w-4 h-4 rounded-full border-2 border-b-transparent animate-spin border-[inherit]"/>
 
@@ -297,7 +320,7 @@ const ContactUs = () => {
                     {step == 2 && <ChoicePanel onChoose={(choice)=>{
                         if(choice == 'upload')
                             setStep(3)
-                        if(choice == 'scheduele')
+                        if(choice == 'schedule')
                             setStep(4)
                     }}/>}
                     {step == 3 &&
@@ -370,10 +393,86 @@ const ContactUs = () => {
                             
                             </section>
                         }
+                        {step == 4 &&
+                        
+                        <section className=' min-h-[500px]'>
+                          <div className='sm:col-span-2'>
+                            <ScheduleMeeting {...getValues()} />
+                          </div>
+                        </section>
+                        }
                 </div>
             </div>
         </div>
     );
+};
+interface ScheduleMeetingProps {
+  name:string;
+  email:string;
+  descreption:string;
+}
+
+const ScheduleMeeting: React.FC<ScheduleMeetingProps> = ({  email, name, descreption }) => {
+  const {
+    setError,
+    register,
+    handleSubmit,
+    clearErrors,
+    formState: { isSubmitting,errors },
+  }  = useForm<z.infer<typeof TimeFormSchema>>({
+  resolver: zodResolver(TimeFormSchema),
+  defaultValues: {
+  },
+});
+  const [Iscompleted, setCompleted ] = useState(false);
+  const onSubmit = async (values: z.infer<typeof TimeFormSchema>) => {
+    const s_res = await createMeeting({
+      email,
+      name,
+      descreption,
+      appointment:values.appointment
+    }as unknown as IMeeting);
+    clearErrors('appointment');
+    if(!s_res.success) {
+        setError('root',{message:'Something went wrong'.concat(s_res.error)})
+        return;
+    } 
+    setCompleted(true)
+  };
+  return (
+<>
+{!Iscompleted?
+      <div className="flex flex-col items-center space-y-4">
+      <h2 className="text-xl font-bold">Schedule a Meeting</h2>
+      <form className="flex space-x-3" onSubmit={handleSubmit(onSubmit)}>
+      <input
+
+      {...register("appointment",)}
+      type="datetime-local"        
+        className="border rounded p-2 "
+      />
+      <Button disabled={isSubmitting}  type="submit" className="mt-4 bg-green-400 hover:bg-green-400/90">
+      {!isSubmitting? <span>Schedule Meeting</span>:      <div className="w-4 h-4 rounded-full border-2 border-b-transparent animate-spin border-[inherit]"/>}
+      </Button>
+      </form>
+      
+      {errors.appointment && (
+        <div className="text-red-500">{errors.appointment.message}</div>
+      )}    
+      {errors.root && (
+        <div className="text-red-500">{errors.root.message}</div>
+      )}    
+    </div>
+      :(  
+            <div className='flex flex-col w-full justify-center items-center py-4  drop-shadow-sm '>
+            <LucideCircleCheck className=' h-20 w-20 text-green-400' ></LucideCircleCheck>
+            <p className="mt-4 text-lg  text-gray-500 font-bold ">Success, we&apos;ll contact you soon</p>
+            </div>
+        )}
+    
+</>    
+  );
+
 };
 const ProgressCircle = ({ progress }:{progress:number, completed:boolean}) => {
     const strokeDasharray = 283; // 2 * Math.PI * 45 (circle circumference)

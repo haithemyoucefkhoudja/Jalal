@@ -8,10 +8,14 @@ import { PaginationPrevious, PaginationItem, PaginationNext, PaginationContent, 
 import { Loading } from "../ui/buttonLoading"
 import { X } from "lucide-react"
 import React from "react"
-import { IRequest, RequestStatus } from "@/types/request"
+import {  RequestStatus } from "@/types/request"
 import { DashboardImageModal } from "../component/dashboard-image-modal"
 import ConfirmDeletion from "../component/ConfirmDeletion-modal"
 import DescreptionModal from "../component/Descreption-modal"
+import { IRequest } from "@/models/request"
+import { Button } from "../ui/button"
+import { REQMEET } from "@/types/reqmeet"
+import { IMeeting } from "@/models/meeting"
 // Function to format the date
 const formatDate = (dateString:string) => {
   const options = { year: 'numeric', month: 'long', day: 'numeric' } as any;
@@ -33,7 +37,7 @@ const statusToArabic = {
   "REJECTED": 'ملغى', 
   "PENDING": 'لم يتم معالجته',
 };
-function SelectionOptions({request}:{request:IRequest}) {
+function SelectionOptions({request, type='REQUEST'}:{request:IRequest, type:REQMEET}) {
   const Dropref = useRef<null | HTMLDivElement>(null)
   const Buttonref = useRef<null |HTMLButtonElement>(null);
   const [selectedOption, setselectedOption] = useState<RequestStatus>(request.status)
@@ -55,13 +59,13 @@ function SelectionOptions({request}:{request:IRequest}) {
     setshowUpdate(false)
     if (request.status !== 'PENDING') return;
     try {
-      const response = await fetch(`/api/retour/update-status/${request.id}`,
+      const response = await fetch(`/api/update-status/${request._id}`,
       {
       method: 'POST',
       headers: {
       'Content-Type': 'application/json' 
       },
-      body: JSON.stringify({newStatus:option})
+      body: JSON.stringify({newStatus:option, type})
     }
     );
       if(response.status !== 200)
@@ -96,7 +100,7 @@ function SelectionOptions({request}:{request:IRequest}) {
 </button>
 <div ref={Dropref} className=" hidden absolute z-50 max-h-48  mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button">
 {Object.entries(statusToArabic).map(([key, value]) => (
-  key !== 'not-treated' &&
+  key !== 'PENDING' &&
   <button   type="button" onClick={()=> {
     setshowUpdate(true)
     if(Dropref.current)
@@ -130,188 +134,142 @@ function SelectionOptions({request}:{request:IRequest}) {
       
 )
 }
-const groupByDate = (requests: IRequest[]): Record<string, IRequest[]> => {
-  if(!requests)
-    return {}
-  return requests.reduce((groups: Record<string, IRequest[]>, request) => {
-    const date = formatDate(request.createdAt.toString());
+
+const groupByDate = (items: IRequest[]): Record<string, (IRequest | IMeeting)[]> => {
+  if (!items) return {};
+  return items.reduce((groups: Record<string, (IRequest | IMeeting)[]>, item) => {
+    const date = formatDate((item as IRequest).createdAt.toString());
     if (!groups[date]) {
       groups[date] = [];
     }
-    groups[date].push(request);
+    groups[date].push(item);
     return groups;
   }, {});
 };
-export function Retour({session, requests, count, page}:{session:Session, requests:IRequest[], count:number, page:number}){
- {/* const [search, setSearch] = useState("")
-  const [page, setPage] = useState(1)
-  const [itemsPerPage, setitemsPerPage] = useState(Math.min(count, 10))
-  const [searchTerm, setSearchTerm] = useState("")
-*/}
+export function Retour({session, requests, meetings, count, page, type='REQUEST'}:{session:Session, requests?:IRequest[], meetings?:IMeeting[], count:number, page:number, type?:REQMEET}){
+  
+  const [ImgModalOpen, setImgModalOpen] = useState(false)
   const limit = 20;
   const [batch, setBatch] = useState(Math.floor(page / 10 + 1));
   const itemsPerPage = 10;
   const totalP = Math.ceil(count / limit);
   const totalBatches = Math.ceil(totalP / itemsPerPage);
-  const [isOpen, setIsOpen] = useState(false);  
-    const togglePopup = () => {
-      setIsOpen(!isOpen);
-  };
-  const groupedrequests = groupByDate(requests);
-  {/*const filteredData = requests.filter((row) => {
-    const searchTerms = search.split(',').map((term) => term.trim());
-    return searchTerms.every((term, index) => {
-      switch (index) {
-        case 0:
-          return row.createdAt.toString().includes(term);
-        case 1:
-          return row.PageName.includes(term);
-        case 2:
-          return row.status.includes(term);
-        case 3:
-          return row.uniqueId.includes(term);
-        case 4:
-          return row.Ip.includes(term);
-        default:
-          return true;
-      }
-    });
-  });*/}
-    return(
-    <section className="w-full ">
-  <Card dir="rtl" className=" pb-10 ">
-    <CardHeader>
-      <CardTitle>الطلبات</CardTitle>
-      <CardDescription>{session.user?.email}</CardDescription>
-    </CardHeader>
-    {/*<div className="flex items-center gap-2 px-4 my-4">
-        <div className="flex border-2 border-gray-500 rounded-md  mx-4">
-            <Input
-              placeholder="البحث"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-            <button className="flex justify-center items-center ml-4">  
-            <SearchIcon  className="w-4 h-4 hover:stroke-gray-700/90 stroke-gray-900" />
-            </button>
-        </div>
-        <div className="flex-1">
+  const [isOpen, setIsOpen] = useState(false);
+  const items = type === 'REQUEST' ? requests : meetings;
+  const groupedItems = groupByDate(items as IRequest[] || []);
 
-        </div>
-        <div className=" w-20">
-          <Select value={pageSize.toString()}    onValueChange={(e) => setPageSize(Number(e))}>
-            <SelectTrigger>
-              <SelectValue>{pageSize}</SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="10">10 </SelectItem>
-              <SelectItem value="20">20 </SelectItem>
-              <SelectItem value="50">50 </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>*/}
-    <CardContent>
-    
-      
-  <div className="relative w-full  pb-20  ">
-      <Table>
-        <TableHeader>
-          <TableRow >
-            <TableHead>المعرف</TableHead>
-            <TableHead>الاسم</TableHead>
-            <TableHead>الايمايل</TableHead>
-            
-            <TableHead>الوصف</TableHead>
-            <TableHead>الصور</TableHead>
-            <TableHead>الحالة</TableHead>
-            <TableHead>الوقت</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody className=" pb-9">
-        {Object.entries(groupedrequests).map(([date, requestsForDate], index) => {
   return (
-    <React.Fragment key={`date-row-${index}-frag`}>
-      <TableRow key={`date-row-${index}`}>
-        <TableCell colSpan={8} className="text-center">
-          {formatDate(date)}
-        </TableCell>
-      </TableRow>
-      {requestsForDate.map((request, trindex) => (
-          <TableRow key={`request-${index}-${trindex}`}>
-            <TableCell className="font-medium max-w-10 overflow-hidden break-words whitespace-normal">
-              <Link
-                className="hover:italic hover:underline"
-                onClick={togglePopup}
-                href={{ query: { id: request.id, page: page, count: count } }}
-                scroll={false}
-              >
-                {request.id}
-              </Link>
-            </TableCell>
-            <TableCell className="max-w-10 overflow-hidden break-words whitespace-normal">
-              {request.name}
-            </TableCell>
-            <TableCell className="max-w-10 overflow-hidden break-words whitespace-normal">
-              {request.email}
-            </TableCell>
-            
-            <TableCell className="max-w-10 overflow-hidden break-words whitespace-normal">
-            <DescreptionModal descreption={request.description} id={request.id}/>
-            </TableCell>
-            <TableCell className="max-w-10 overflow-hidden break-words whitespace-normal">
-              <DashboardImageModal req_id={request.id}/>
-            </TableCell>
-            <TableCell>
-              <SelectionOptions request={request} />
-            </TableCell>
-            {/*<TableCell>
-              <OrderButton order={JSON.parse(JSON.stringify(request.orderInfos))} />
-            </TableCell>*/}
-            <TableCell>{formatTime(request.createdAt.toString())}</TableCell>
-            
-            <TableCell><ConfirmDeletion></ConfirmDeletion></TableCell>
-          </TableRow>
-        
-      ))}
-    </React.Fragment>
-  );
-})}
-
-</TableBody>
-      </Table>
-    </div>
-    </CardContent>
-    <div className="mt-6 flex justify-center w-full " dir="ltr">
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                href="#"
-                onClick={() => setBatch(prev=>prev - 1)}
-                disabled={batch === 1 || count == 0}
-              />
-            </PaginationItem>
-            {Array.from({ length: Math.min(totalP - ((batch - 1 ) * 10), 10) }, (_, i) => (i + (batch - 1 ) * 10) + 1).map((page_index) => (
-              <PaginationItem key={page_index}>
-                <PaginationLink className={page === page_index ? 'border-2 ': ''}  href={`/Dashboard?page=${page_index}&count=${count}`}   disabled={page === page_index}>
-                  {page_index}
-                </PaginationLink>
+    <section className="w-full ">
+      <Card dir="rtl" className=" pb-10 ">
+        <CardHeader>
+          <CardTitle>{type === 'REQUEST' ? 'الطلبات' : 'المواعيد'}</CardTitle>
+          <CardDescription>{session.user?.email}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="relative w-full  pb-20  ">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>المعرف</TableHead>
+                  <TableHead>الاسم</TableHead>
+                  <TableHead>الايمايل</TableHead>
+                  <TableHead>الوصف</TableHead>
+                  {type === 'REQUEST' && <TableHead>الصور</TableHead>}
+                  {type === 'MEETING' && <TableHead>الموعد</TableHead>}
+                  <TableHead>الحالة</TableHead>
+                  <TableHead>الوقت</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody className=" pb-9">
+                {Object.entries(groupedItems).map(([date, itemsForDate], index) => {
+                  return (
+                    <React.Fragment key={`date-row-${index}-frag`}>
+                      <TableRow key={`date-row-${index}`}>
+                        <TableCell colSpan={8} className="text-center">
+                          {formatDate(date)}
+                        </TableCell>
+                      </TableRow>
+                      {itemsForDate.map((item, trindex) => (
+                        <TableRow key={`item-${index}-${trindex}`}>
+                          <TableCell className="font-medium max-w-10 overflow-hidden break-words whitespace-normal">
+                            <span
+                              className="hover:italic hover:underline"
+                              
+                            >
+                              {item._id}
+                            </span>
+                          </TableCell>
+                          <TableCell className="max-w-10 overflow-hidden break-words whitespace-normal">
+                            {item.name}
+                          </TableCell>
+                          <TableCell className="max-w-10 overflow-hidden break-words whitespace-normal">
+                            {item.email}
+                          </TableCell>
+                          
+                            <TableCell className="max-w-10 overflow-hidden break-words whitespace-normal">
+                              <DescreptionModal descreption={item.descreption} id={item._id} />
+                            </TableCell>
+                          
+                          {type === 'REQUEST' &&
+                            <TableCell className="max-w-10 overflow-hidden break-words whitespace-normal">
+                              {!ImgModalOpen ? (
+                                <Button type="button" variant="outline" className="rounded-lg" onClick={(e) => {
+                                  setImgModalOpen(true)
+                                }} >إفتح الصور</Button>
+                              ) : (
+                                <DashboardImageModal isOpen={ImgModalOpen} updateState={() => setImgModalOpen(false)} req_id={item._id} />
+                              )}
+                            </TableCell>
+                          }
+                          {type === 'MEETING' &&
+                            <TableCell className="max-w-10 overflow-hidden break-words whitespace-normal">
+                              {new Date(((item as IMeeting).appointment)).toLocaleString()}
+                            </TableCell>
+                          }
+                          <TableCell>
+                            <SelectionOptions request={item as IRequest} type={type} />
+                          </TableCell>
+                          <TableCell>{formatTime(item.createdAt.toString())}</TableCell>
+                          <TableCell>
+                            <ConfirmDeletion type={type} req_id={item._id} />
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </React.Fragment>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+        <div className="mt-6 flex justify-center w-full " dir="ltr">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href="#"
+                  onClick={() => setBatch(prev => prev - 1)}
+                  disabled={batch === 1 || count === 0}
+                />
               </PaginationItem>
-            ))}
-            <PaginationItem>
-              <PaginationNext
-                href="#"
-                onClick={() => setBatch(prev=>prev + 1)}
-                disabled={batch  == totalBatches || count == 0}
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      </div>
- 
-  </Card>
-   {/*isOpen && <Indicator isOpen={isOpen} count={count} updateState={()=>setIsOpen(false)} page={page}/>*/}
-  </section>
-    )
+              {Array.from({ length: Math.min(totalP - ((batch - 1) * 10), 10) }, (_, i) => (i + (batch - 1) * 10) + 1).map((page_index) => (
+                <PaginationItem key={page_index}>
+                  <PaginationLink className={page === page_index ? 'border-2 ' : ''} href={`/admin/Dashboard/${type=='REQUEST'?'Requests':'Meetings'}?page=${page_index}&count=${count}`} disabled={page === page_index}>
+                    {page_index}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  onClick={() => setBatch(prev => prev + 1)}
+                  disabled={batch === totalBatches || count === 0}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      </Card>
+    </section>
+  )
 }

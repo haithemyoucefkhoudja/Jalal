@@ -22,19 +22,16 @@ export default async function Dashboard({ searchParams }: PageProps) {
     typeof searchParams.page === 'string' ? Number(searchParams.page) : 1;
     let count = 0
     if(typeof searchParams.count !== 'string') {
-            const res = await getReqCount()
+            const res = await getReqCount('MEETING')
             count = res.count
     }
     else count = Number(searchParams.count);
-    const {requests } = await getRequests(page)
+    const { meetings } = await getRequests(page, 'MEETING')
+    console.log(meetings)
     return(
-      <main className={`flex flex-col max-h-screen flex-grow overflow-hidden w-full`}>
-        <section className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6 overflow-auto ">
     <div className="flex flex-col space-y-4">
-            <Retour session={session} count={count} requests={requests} page={page}/>
+        <Retour session={session} count={count} meetings={meetings} page={page} type="MEETING"/>
     </div>
-    </section>
-    </main>
     )
 }
     {/*
