@@ -444,7 +444,7 @@ const ScheduleMeeting: React.FC<ScheduleMeetingProps> = ({  email, name, descrep
 {!Iscompleted?
       <div className="flex flex-col items-center space-y-4">
       <h2 className="text-xl font-bold">Schedule a Meeting</h2>
-      <form className="flex space-x-3" onSubmit={handleSubmit(onSubmit)}>
+      <form className="flex flex-wrap space-y-3 space-x-3 max-w-sm" onSubmit={handleSubmit(onSubmit)}>
       <input
 
       {...register("appointment",)}
