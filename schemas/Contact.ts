@@ -6,15 +6,7 @@ export const TimeFormSchema = z.object({
       if (parsedDate.toString() === 'Invalid Date') {
         return false;
       }
-
-      // Convert to UTC
-      const utcDate = new Date(parsedDate.getTime() - (parsedDate.getTimezoneOffset() * 60000));
-      
-      // Return the UTC date in the same format (ISO string without timezone information)
-      const formattedUTCDate = utcDate.toISOString().slice(0, -1);
-
-      // Check if the input date matches the formatted UTC date
-      return formattedUTCDate;
+      return value;
     } catch {
       return false;
     }
