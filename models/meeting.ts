@@ -8,7 +8,7 @@ export interface IMeeting extends Document {
   email: string;
   descreption: string;
   status: RequestStatus;
-  appointment: Date;
+  appointment: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -25,7 +25,7 @@ const meetingSchema = new Schema<IMeeting>({
       'REJECTED',
     ]
    },
-   appointment:{type:Date, required:true},
+   appointment:{type:String, required:true},
 }, {
   timestamps: true,
 });

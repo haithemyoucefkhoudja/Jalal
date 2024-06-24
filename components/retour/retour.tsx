@@ -13,7 +13,6 @@ import { DashboardImageModal } from "../component/dashboard-image-modal"
 import ConfirmDeletion from "../component/ConfirmDeletion-modal"
 import DescreptionModal from "../component/Descreption-modal"
 import { IRequest } from "@/models/request"
-import { Button } from "../ui/button"
 import { REQMEET } from "@/types/reqmeet"
 import { IMeeting } from "@/models/meeting"
 // Function to format the date
@@ -147,7 +146,7 @@ const groupByDate = (items: IRequest[]): Record<string, (IRequest | IMeeting)[]>
   }, {});
 };
 const getDateTime = (date:Date) =>{
-  const year = date.getFullYear();
+  const year = date.getUTCFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
   const day = String(date.getDay()).padStart(2, '0');
   const hours = String(date.getHours()).padStart(2, '0');
@@ -225,7 +224,7 @@ export function Retour({session, requests, meetings, count, page, type='REQUEST'
                           }
                           {type === 'MEETING' &&
                             <TableCell className="max-w-10 overflow-hidden break-words whitespace-normal">
-                              {getDateTime((item as IMeeting).appointment)}
+                              {(item as IMeeting).appointment}
                             </TableCell>
                           }
                           <TableCell>
