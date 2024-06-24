@@ -146,6 +146,15 @@ const groupByDate = (items: IRequest[]): Record<string, (IRequest | IMeeting)[]>
     return groups;
   }, {});
 };
+const getDateTime = (date:Date) =>{
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+  const day = String(date.getDay()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const humanReadableDate = `${year}-${month}-${day} ${hours}:${minutes}`;
+  return humanReadableDate
+}
 export function Retour({session, requests, meetings, count, page, type='REQUEST'}:{session:Session, requests?:IRequest[], meetings?:IMeeting[], count:number, page:number, type?:REQMEET}){
   
   const [ImgModalOpen, setImgModalOpen] = useState(false)
@@ -216,7 +225,7 @@ export function Retour({session, requests, meetings, count, page, type='REQUEST'
                           }
                           {type === 'MEETING' &&
                             <TableCell className="max-w-10 overflow-hidden break-words whitespace-normal">
-                              {formatDate(((item as IMeeting).appointment).toString()) + ' ' + formatTime(((item as IMeeting).appointment).toString())}
+                              {getDateTime((item as IMeeting).appointment)}
                             </TableCell>
                           }
                           <TableCell>
