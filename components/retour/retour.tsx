@@ -216,7 +216,7 @@ export function Retour({session, requests, meetings, count, page, type='REQUEST'
                           }
                           {type === 'MEETING' &&
                             <TableCell className="max-w-10 overflow-hidden break-words whitespace-normal">
-                              {((item as IMeeting).appointment).toLocaleString()}
+                              {formatDate(((item as IMeeting).appointment).toString()) + ' ' + formatTime(((item as IMeeting).appointment).toString())}
                             </TableCell>
                           }
                           <TableCell>
