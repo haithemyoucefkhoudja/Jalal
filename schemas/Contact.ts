@@ -1,10 +1,20 @@
 import { z } from "zod";
 export const TimeFormSchema = z.object({
   appointment: z.string().refine((value) => {
-    try {const parsedDate = new Date(value);
-      if(parsedDate.toString() == 'Invalid Date')
-        return false
-      return value;
+    try {
+      const parsedDate = new Date(value);
+      if (parsedDate.toString() === 'Invalid Date') {
+        return false;
+      }
+
+      // Convert to UTC
+      const utcDate = new Date(parsedDate.getTime() - (parsedDate.getTimezoneOffset() * 60000));
+      
+      // Return the UTC date in the same format (ISO string without timezone information)
+      const formattedUTCDate = utcDate.toISOString().slice(0, -1);
+
+      // Check if the input date matches the formatted UTC date
+      return formattedUTCDate;
     } catch {
       return false;
     }
