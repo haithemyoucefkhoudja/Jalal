@@ -424,13 +424,23 @@ const ScheduleMeeting: React.FC<ScheduleMeetingProps> = ({  email, name, descrep
   defaultValues: {
   },
 });
+
+const getDateTime = (date:Date) =>{
+  const year = date.getUTCFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+  const day = String(date.getDay()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const humanReadableDate = `${year}-${month}-${day}, ${hours}:${minutes}`;
+  return humanReadableDate
+}
   const [Iscompleted, setCompleted ] = useState(false);
   const onSubmit = async (values: z.infer<typeof TimeFormSchema>) => {
     const s_res = await createMeeting({
       email,
       name,
       descreption,
-      appointment:values.appointment
+      appointment:getDateTime(new Date(values.appointment))
     }as unknown as IMeeting);
     clearErrors('appointment');
     if(!s_res.success) {
