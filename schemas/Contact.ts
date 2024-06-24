@@ -4,7 +4,7 @@ export const TimeFormSchema = z.object({
     try {const parsedDate = new Date(value);
       if(parsedDate.toString() == 'Invalid Date')
         return false
-      return parsedDate;
+      return value;
     } catch {
       return false;
     }

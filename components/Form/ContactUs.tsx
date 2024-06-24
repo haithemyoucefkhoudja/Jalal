@@ -245,7 +245,7 @@ const ContactUs = () => {
         setStep(2)
       };
     return (
-        <div id="contact-us" className="overflow-hidden bg-white py-16 px-4  sm:px-6 lg:px-8 lg:py-24">
+        <div id="Form" className="overflow-hidden bg-white py-16 px-4  sm:px-6 lg:px-8 lg:py-24">
             <div className="relative mx-auto max-w-xl">
                 <svg className="absolute left-full translate-x-1/2 transform" width="404" height="404" fill="none" viewBox="0 0 404 404" aria-hidden="true">
                     <defs>
