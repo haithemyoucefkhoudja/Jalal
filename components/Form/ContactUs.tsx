@@ -424,14 +424,16 @@ const ScheduleMeeting: React.FC<ScheduleMeetingProps> = ({  email, name, descrep
   defaultValues: {
   },
 });
-
+const formatDate = (dateString:string) => {
+  const options = { year: 'numeric', month: 'long', day: 'numeric' } as any;
+  return new Date(dateString).toLocaleDateString(undefined, options);
+};
+const formatTime = (dateString:string) => {
+  const options = { hour: '2-digit', minute: '2-digit', second: '2-digit' } as any;
+  return new Date(dateString).toLocaleTimeString(undefined, options);
+};
 const getDateTime = (date:Date) =>{
-  const year = date.getUTCFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-  const day = String(date.getDay()).padStart(2, '0');
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  const humanReadableDate = `${year}-${month}-${day}, ${hours}:${minutes}`;
+  const humanReadableDate = `${formatDate(date.toString())} ${formatTime(date.toString())}`;
   return humanReadableDate
 }
   const [Iscompleted, setCompleted ] = useState(false);
