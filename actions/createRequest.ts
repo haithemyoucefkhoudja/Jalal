@@ -1,7 +1,8 @@
+import axiosInstance from "@/lib/axios";
 import getBaseUrl from "@/lib/baseURL";
 import { IRequest } from "@/models/request";
 
-const createRequest = async (req: IRequest) => {
+const oldcreateRequest = async (req: IRequest) => {
     try {
     const domain = getBaseUrl();
     const url = `${domain}/api/createRequest`
@@ -31,6 +32,16 @@ const createRequest = async (req: IRequest) => {
       };
     }
   };
-  
+const createRequest = async (req:IRequest)=>{
+  const domain = getBaseUrl();
+  const url = `${domain}/api/createRequest`
+  const response = await axiosInstance.post(url,{
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body:JSON.stringify({_req:req ,type:'REQUEST'})
+  })
+  return response.data;
+}
 export default createRequest;
   

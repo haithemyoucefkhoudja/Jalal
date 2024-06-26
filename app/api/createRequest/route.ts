@@ -10,7 +10,6 @@ const createRequest = async (req:IRequest):Promise<IRequest | null> => {
       const transaction:IRequest = new RequestModel(req);
 
       const savedTransaction = await transaction.save();
-      console.log(savedTransaction)
       return savedTransaction;
     } catch (error:any) {
         // Handle other errors
@@ -32,21 +31,19 @@ const createMeeting = async (req:IMeeting):Promise<IMeeting | null > => {
 }
     
 async function helper(req:NextRequest) {
-    const { _req, type } = await req.json();
-    await connectMongoDB();
-    console.log(_req);
-
+    const data = await req.json();
+    const {_req, type} = JSON.parse(data.body);
     let transaction;
+    await connectMongoDB();
     if (type === 'REQUEST') {
       transaction = await createRequest(_req);
     } else if (type === 'MEETING') {
       transaction = await createMeeting(_req);
     } else {
-      return new NextResponse(JSON.stringify({ message: 'Invalid type' }), { status: 400 });
+      return new NextResponse(JSON.stringify({ error: 'Invalid type' }), { status: 400,  });
     }
-
     if (!transaction) {
-      return new NextResponse(JSON.stringify({ message: 'Unsuccessful operation' }), { status: 500 });
+      return new NextResponse(JSON.stringify({ error: 'Unsuccessful operation' }), { status: 500 });
     }
 
     return new NextResponse(JSON.stringify({ message: 'Success' }), { status: 200 });

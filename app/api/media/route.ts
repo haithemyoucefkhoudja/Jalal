@@ -6,18 +6,17 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req:NextRequest) {
     const {req_id} = await req.json();
     try {
-      
         await connectMongoDB();
         const req:IRequest | null = await RequestModel.findById(req_id).select('media').exec();
         if(!req)
           return NextResponse.json(
-            { error: 'Something went wrong:\n NOT-FOUND' },
+            { error: 'Something went wrong:\n Request with this id is NOT-FOUND' },
             { status: 404 }
           );
         const media = req.media
         if(media.length == 0)
             return NextResponse.json(
-                { error: 'Something went wrong:\n'.concat('no Media Was Found') },
+                { error: 'Something went wrong:\n no Media Was Found' },
                 { status: 404 }
               );    
         return NextResponse.json({ media: media });

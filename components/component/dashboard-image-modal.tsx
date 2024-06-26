@@ -16,6 +16,7 @@ export function DashboardImageModal({req_id, }:{req_id:string,}) {
   useEffect(()=>{
     if(!open)
       return;
+    setError(null);
     let isMounted = true;
     FetchMedia(req_id)
     .then((res) => {
@@ -38,8 +39,10 @@ export function DashboardImageModal({req_id, }:{req_id:string,}) {
         <DialogTitle>
 
         </DialogTitle>
+        
+        
         <div className="grid gap-6">
-          <div className="grid gap-4">
+        {!error &&<div className="grid gap-4">
           { media && media.map((ele,index)=>{
             if(index == curr)
               return(<div className="relative">
@@ -75,11 +78,13 @@ export function DashboardImageModal({req_id, }:{req_id:string,}) {
 }
 )}
 </div>
-          </div>
-          {error && <div className="prose">
+          </div>}
+          {error && <div className="prose  flex justify-center items-center">
             <h3 className=" text-red-500">{error}</h3>
           </div>
+          
           }       
+          
         </div>
       </DialogContent>
     </Dialog>

@@ -56,8 +56,6 @@ export default function SelectionOptions({request, type='REQUEST'}:{request:IReq
 
     if (Dropref.current) Dropref.current.style.display = 'none'; // Hide the dropdown
     setIsLoading(false)
-
-
   }
   if(request.status !== 'PENDING')
     return<span className={`h-10 rounded-md px-4 py-2 w-32  ${statusToTailwindClass[request.status]}`}>{statusToArabic[request.status]}</span>

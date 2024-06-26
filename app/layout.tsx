@@ -1,3 +1,4 @@
+import { ReactQuerProvider } from '@/components/providers/ReactQueryProvider'
 import './globals.css'
 import { Rubik } from 'next/font/google'
 
@@ -14,7 +15,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <ReactQuerProvider>
       <body className={roboto.className}>{children}</body>
+      </ReactQuerProvider>
     </html>
   )
 }

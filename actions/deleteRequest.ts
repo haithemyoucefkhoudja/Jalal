@@ -25,7 +25,7 @@ const deleteRequest = async (id: string) => {
       return {
         success: false,
         data: null,
-        error: error.message || 'An error occurred while creating the request',
+        error: error.message || 'An error occurred while deleting the request',
       };
     }
   };

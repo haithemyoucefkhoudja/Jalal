@@ -1,7 +1,9 @@
+import axiosInstance from "@/lib/axios";
 import getBaseUrl from "@/lib/baseURL";
 import { IMeeting } from "@/models/meeting";
+import axios from "axios";
 
-const createMeeting = async (req: IMeeting) => {
+const oldcreateMeeting = async (req: IMeeting) => {
     try {
     const domain = getBaseUrl();
     const url = `${domain}/api/createRequest`
@@ -27,9 +29,17 @@ const createMeeting = async (req: IMeeting) => {
       return {
         success: false,
         data: null,
-        error: error.message || 'An error occurred while creating the request',
+        error: error.message || 'An error occurred while creating the meeting',
       };
     }
+  };
+  const createMeeting = async (meet: IMeeting) => {
+    const domain = getBaseUrl();
+    const url = `${domain}/api/createRequest`
+    const response = await axiosInstance.post(url, {
+        body: JSON.stringify({_req:meet ,type:'MEETING'}),
+      })
+    return response.data;
   };
   
 export default createMeeting;
